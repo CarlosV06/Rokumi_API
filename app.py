@@ -35,3 +35,8 @@ DB = MongoEngine(app)
 
 cloudinary.config(cloud_name = os.getenv('CLOUD_NAME'), api_key=os.getenv('API_KEY'), 
     api_secret=os.getenv('API_SECRET'))
+
+# BLUEPRINTS FOR SEGMENTING CONTROLLERS #
+from controllers.User_Routes import userRoutes
+
+app.register_blueprint(userRoutes)

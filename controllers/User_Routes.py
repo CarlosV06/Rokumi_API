@@ -27,14 +27,15 @@ def user_signUp():
     else:
     # CREATING A NEW USER #
 
-        newUser = UserModel(fist_name = firstName, last_name = lastName, email = email, password = password).save()
+        newUser = UserModel(first_name = firstName, last_name = lastName, email = email, password = password).save()
         
         # ACCESS TOKEN FOR THE REGISTERED USER #
-        access_token = create_access_token(identity = newUser.email)
+        access_token = create_access_token(identity = str(newUser.id))
     
         return jsonify(
             message = "User created successfully.",
             status = "201",
+            idUser = str(newUser.id),
             access_token = access_token,
             firstName = newUser.first_name,
             lastName = newUser.last_name,
@@ -48,4 +49,33 @@ def user_signUp():
 @userRoutes.route('/user/signIn', methods = ['POST'])
 def user_signIn():
     
-    return ""
+    # GETTING USER'S INFO #
+    
+    data = request.json
+    email = data['email']
+    password = data['password']
+    
+    user = UserModel.objects(email = email).first()
+    
+    if user is not None and UserModel.Verify(user.password, password):
+        
+        # ACCESS TOKEN FOR THE AUTHENTICATED USER #
+        access_token = create_access_token(identity=str(user.id))
+        
+        return jsonify(
+            message = "Process completed successfully.",
+            status = "200",
+            email = user.email,
+            photo = user.photo,
+            role = user.role,
+            idUser = str(user.id),
+            firstName = user.first_name,
+            lastName = user.last_name
+        ), 200
+        
+    
+    else:
+        
+        # USER DOES NOT EXIST OR WRONG INFO GIVEN #
+        return jsonify(message = "Wrong credentials or the user does not exist.", status = "409"), 409
+        
