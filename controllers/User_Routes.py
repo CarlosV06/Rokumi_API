@@ -207,3 +207,10 @@ def deleteUser():
     else: 
         
         return jsonify(message = "User does not exist.", status = "409"), 409
+
+# LOGOUT #
+@userRoutes.route('/user/logout', methods = ['POST'])
+@jwt_required()
+def logout():
+    
+    return jsonify(message = "Session terminated successfully.", status = "200", user = get_jwt_identity(), loggedOut = "True"), 200
