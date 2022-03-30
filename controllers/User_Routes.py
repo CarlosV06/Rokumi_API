@@ -143,5 +143,37 @@ def editUser_information():
         return jsonify(message = "User not found.", status = "409"), 409
      
 
+# EDITION OF USER'S PASSWORD #
+@userRoutes.route('/user/changePassword', methods = ['PUT'])
+@jwt_required()
+def editUser_password():
+    
+    # GETTING USER'S CREDENTIALS AND VALIDATING THEM #
+    
+    user = UserModel.objects(id = get_jwt_identity()).first()
+    
+    data = request.json
+    oldPassword = data['oldPassword']
+    newPassword = data['newPassword']
+    
+    if newPassword and UserModel.Verify(user.password, oldPassword):
+        
+        # SETTING NEW PASSWORD #
+        user.update(password = UserModel.Encrypt(newPassword))
+        user.reload()
+        
+        return jsonify(
+            message = "Password changed successfully.",
+            status = "201"
+        ), 201
+    
+    else:
+        
+        return jsonify(
+            message = "Missing fields or wrong credentials.",
+            status = "400"
+        ), 400
+
+
 # EDITION OF USER'S PROFILE PICTURE #
 
