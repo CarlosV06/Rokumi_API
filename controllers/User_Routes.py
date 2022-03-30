@@ -27,7 +27,6 @@ def user_signUp():
     
     else:
     # CREATING A NEW USER #
-
         newUser = UserModel(first_name = firstName, last_name = lastName, email = email, password = password).save()
         
         # ACCESS TOKEN FOR THE REGISTERED USER #
@@ -59,7 +58,6 @@ def user_signIn():
     user = UserModel.objects(email = email).first()
     
     if user is not None and UserModel.Verify(user.password, password):
-        
         # ACCESS TOKEN FOR THE AUTHENTICATED USER #
         access_token = create_access_token(identity=str(user.id))
         
@@ -75,9 +73,7 @@ def user_signIn():
             lastName = user.last_name
         ), 200
         
-    
     else:
-        
         # USER DOES NOT EXIST OR WRONG INFO GIVEN #
         return jsonify(message = "Wrong credentials or the user does not exist.", status = "409"), 409
     
@@ -125,7 +121,6 @@ def editUser_information():
     
     # CHECKING IF THE USER EXISTS #
     if user_session:
-        
         # CHANGING USER'S INFORMATION #
         user_session.update(email = email, first_name = firstName, last_name = lastName)
         user_session.reload()
@@ -158,7 +153,6 @@ def editUser_password():
     newPassword = data['newPassword']
     
     if newPassword and UserModel.Verify(user.password, oldPassword):
-        
         # SETTING NEW PASSWORD #
         user.update(password = UserModel.Encrypt(newPassword))
         user.reload()
@@ -186,7 +180,6 @@ def setPicture():
     user_photo = request.files['profilePicture']
     
     if user_photo:
-        
         # USER'S PHOTO IS SAVED #
         upload = uploader.upload(user_photo, folder = f'Rokumi/{user.id}', public_id = 'profilePicture')
         user.update(photo = upload['url'])
@@ -197,3 +190,20 @@ def setPicture():
          
         return jsonify(message = "A valid file was not selected.", status = "400"), 400
 
+
+# DELETION OF AN EXISTING USER #
+@userRoutes.route('/user', methods = ['DELETE'])
+@jwt_required()
+def deleteUser():
+    
+    # VALIDATION TO CHECK IF THE USER EXISTS, THEN DELETES ITS INFORMATION #
+    user = UserModel.objects(id = get_jwt_identity()).first()
+    
+    if user:
+        user.delete()
+        
+        return jsonify(message = "User deleted successfully.", status = "200"), 200
+    
+    else: 
+        
+        return jsonify(message = "User does not exist.", status = "409"), 409
