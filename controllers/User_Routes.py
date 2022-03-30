@@ -107,5 +107,41 @@ def get_userProfile():
         message = "User's information received successfully.",
         status = "200",
         userInformation = user 
-    ), 200      
+    ), 200    
+    
+
+# EDITION OF BASIC INFORMATION OF THE USER #
+@userRoutes.route('/user', methods = ['PUT'])
+@jwt_required()
+def editUser_information():
+    
+    data = request.json
+    email = data['email']
+    firstName = data['firstName']
+    lastName = data['lastName']
+    
+    user_session = UserModel.objects(id = get_jwt_identity()).first()
+    
+    # CHECKING IF THE USER EXISTS #
+    if user_session:
         
+        # CHANGING USER'S INFORMATION #
+        user_session.update(email = email, first_name = firstName, last_name = lastName)
+        user_session.reload()
+        
+        return jsonify(
+            message = "Changes saved successfully.",
+            status = "201",
+            firstName = user_session.first_name,
+            lastName = user_session.last_name,
+            email = user_session.email,
+            id = str(user_session.id)
+        ), 201
+        
+    else:
+        
+        return jsonify(message = "User not found.", status = "409"), 409
+     
+
+# EDITION OF USER'S PROFILE PICTURE #
+
