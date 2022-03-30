@@ -1,5 +1,6 @@
 # THIS FILE WILL CONTAIN ALL ROUTES RELATED TO USER #
 
+from email import message
 from flask import request, jsonify, Blueprint
 from models.User_Model import UserModel
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
@@ -176,4 +177,23 @@ def editUser_password():
 
 
 # EDITION OF USER'S PROFILE PICTURE #
+@userRoutes.route('/user/profilePicture', methods = ['POST'])
+@jwt_required()
+def setPicture():
+    
+    # USER'S PICTURE RECEPTION #
+    user = UserModel.objects(id = get_jwt_identity()).first()
+    user_photo = request.files['profilePicture']
+    
+    if user_photo:
+        
+        # USER'S PHOTO IS SAVED #
+        upload = uploader.upload(user_photo, folder = f'Rokumi/{user.id}', public_id = 'profilePicture')
+        user.update(photo = upload['url'])
+    
+        return jsonify(message = "Changes saved successfully.", status = "200"), 200
+    
+    else:
+         
+        return jsonify(message = "A valid file was not selected.", status = "400"), 400
 
