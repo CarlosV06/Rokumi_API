@@ -64,6 +64,7 @@ def user_signIn():
         
         return jsonify(
             message = "Process completed successfully.",
+            access_token = access_token,
             status = "200",
             email = user.email,
             photo = user.photo,
@@ -78,4 +79,69 @@ def user_signIn():
         
         # USER DOES NOT EXIST OR WRONG INFO GIVEN #
         return jsonify(message = "Wrong credentials or the user does not exist.", status = "409"), 409
+    
+
+# USER'S PROFILE #
+@userRoutes.route('/user', methods = ['GET'])
+@jwt_required()
+def get_userProfile():
+     
         
+    # GETTING BASIC USER'S INFORMATION #
+    user_session = UserModel.objects(id = get_jwt_identity()).first()
+      
+      
+      
+    user = {
+        'firstName': user_session.first_name,
+        'lastName': user_session.last_name,
+        'email': user_session.email,
+        'photo': user_session.photo,
+        'role': user_session.role
+    }
+      
+    # TRACKING LIST OF THE USER #
+    
+    
+    return jsonify(
+        message = "User's information received successfully.",
+        status = "200",
+        userInformation = user 
+    ), 200    
+    
+
+# EDITION OF BASIC INFORMATION OF THE USER #
+@userRoutes.route('/user', methods = ['PUT'])
+@jwt_required()
+def editUser_information():
+    
+    data = request.json
+    email = data['email']
+    firstName = data['firstName']
+    lastName = data['lastName']
+    
+    user_session = UserModel.objects(id = get_jwt_identity()).first()
+    
+    # CHECKING IF THE USER EXISTS #
+    if user_session:
+        
+        # CHANGING USER'S INFORMATION #
+        user_session.update(email = email, first_name = firstName, last_name = lastName)
+        user_session.reload()
+        
+        return jsonify(
+            message = "Changes saved successfully.",
+            status = "201",
+            firstName = user_session.first_name,
+            lastName = user_session.last_name,
+            email = user_session.email,
+            id = str(user_session.id)
+        ), 201
+        
+    else:
+        
+        return jsonify(message = "User not found.", status = "409"), 409
+     
+
+# EDITION OF USER'S PROFILE PICTURE #
+
