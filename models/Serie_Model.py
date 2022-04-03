@@ -9,6 +9,7 @@ class SerieModel(DB.Document):
     # ATTRIBUTES #
     
     name = DB.StringField(required = True)
+    description = DB.StringField(default = "")
     cover = DB.StringField(default = "")
     author = DB.StringField(default = "none")
     status = DB.StringField(default = "")
