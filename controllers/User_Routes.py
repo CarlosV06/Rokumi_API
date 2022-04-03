@@ -1,6 +1,5 @@
 # THIS FILE WILL CONTAIN ALL ROUTES RELATED TO USER #
 
-from email import message
 from flask import request, jsonify, Blueprint
 from models.User_Model import UserModel
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
