@@ -1,6 +1,7 @@
 # THIS FILE WILL DEFINE THE ROUTES RELATED TO SERIES #
 
 from flask import request, jsonify, Blueprint
+from models.Tracking_Model import TrackingModel
 from models.User_Model import UserModel
 from models.Serie_Model import SerieModel
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
@@ -10,7 +11,7 @@ serieRoutes = Blueprint('serieRoutes', __name__)
 
 
 # UPLOAD NEW SERIE #
-@serieRoutes.route('/serie/new', methods = ['POST'])
+@serieRoutes.route('/serie', methods = ['POST'])
 @jwt_required()
 def uploadSerie():
     user = get_jwt_identity()
@@ -46,6 +47,10 @@ def uploadSerie():
         newSerie.update(cover = serieCover['url'])
         newSerie.reload()
     
+    # SAVING UPLOADER USER'S TRACKING #
+    
+    Tracking = TrackingModel(user = get_jwt_identity(), serie = str(newSerie.id))
+    Tracking.save()
     
     return jsonify(
         message = "Serie uploaded successfully.",
