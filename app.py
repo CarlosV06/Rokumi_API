@@ -39,6 +39,9 @@ cloudinary.config(cloud_name = os.getenv('CLOUD_NAME'), api_key=os.getenv('API_K
 # BLUEPRINTS FOR SEGMENTING CONTROLLERS #
 from controllers.User_Routes import userRoutes
 from controllers.Serie_Routes import serieRoutes
+from controllers.Chapter_Routes import chapterRoutes
 
 app.register_blueprint(userRoutes)
 app.register_blueprint(serieRoutes)
+app.register_blueprint(chapterRoutes)
+
