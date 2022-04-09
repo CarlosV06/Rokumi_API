@@ -1,6 +1,5 @@
 # THIS FILE WILL DEFINE ALL THE ROUTES RELATED TO A USER'S COMMENT #
 
-from cgitb import text
 import datetime
 import time
 from flask import request, jsonify, Blueprint
@@ -82,7 +81,7 @@ def uploadComment(chapter_id):
             ), 201
         
     
-# FUNCTION TO GET A THE CHILDREN OF A COMMENT #
+# FUNCTION TO GET THE CHILDREN OF A COMMENT #
 def getComment_children(parent):
     
     commentChildren = CommentModel.objects(parent = parent).all().order_by('date')
