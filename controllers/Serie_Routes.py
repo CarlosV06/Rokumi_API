@@ -62,4 +62,38 @@ def uploadSerie():
         postedBy = newSerie.posted_by,
         description = newSerie.description
     ), 201
+    
 
+# GET ALL SERIES #
+@serieRoutes.route('/serie', methods = ['GET'])
+def getSeries():
+    
+    try:
+        # GETTING ALL THE SERIES #
+        series = []
+        for serie in SerieModel.objects().all():
+            
+            series.append({
+                'id': str(serie.id),
+                'name': serie.name,
+                'cover': serie.cover,
+                'status': serie.status,
+                'posted_by':{
+                    'userId': str(serie.posted_by.id),
+                    'first_name': serie.posted_by.first_name,
+                    'last_name': serie.posted_by.last_name,
+                }
+            })
+            
+            
+        return jsonify(
+            message = "Information received successfully.",
+            status = "200",
+            data = series
+            ), 200
+        
+        
+    except: return jsonify(message = "An error has occurred while getting the information.", status = "400"), 400
+        
+    
+    
