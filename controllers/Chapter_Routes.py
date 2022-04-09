@@ -6,16 +6,16 @@ from flask import request, jsonify, Blueprint
 from models.Chapter_Model import ChapterModel
 from models.User_Model import UserModel
 from models.Serie_Model import SerieModel
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from cloudinary import api, uploader
 
 chapterRoutes = Blueprint('chapterRoutes', __name__)
 
 # UPLOAD A CHAPTER #
 
-@chapterRoutes.route('/chapter', methods = ['POST'])
+@chapterRoutes.route('/chapter/<string:serie_id>', methods = ['POST'])
 @jwt_required()
-def uploadChapter():
+def uploadChapter(serie_id):
 
     # RECEPTION OF USER'S DATA #
     data = request.form
@@ -24,10 +24,7 @@ def uploadChapter():
         return jsonify(message = "Data was not given.", status = "400"), 400
     
     # LOCATION OF THE SERIE #
-    serie = SerieModel.objects(name = data['serieName']).first()
-    
-    if not serie:
-        return jsonify(message = "Serie not found.", status = "400"), 400
+    serie = SerieModel.objects(id = serie_id).first()
     
     name = data['chapterName']
     chapter_number = data['chapterNumber']
