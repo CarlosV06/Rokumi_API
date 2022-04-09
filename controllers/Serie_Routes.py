@@ -4,7 +4,7 @@ from flask import request, jsonify, Blueprint
 from models.Tracking_Model import TrackingModel
 from models.User_Model import UserModel
 from models.Serie_Model import SerieModel
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from cloudinary import api, uploader
 
 serieRoutes = Blueprint('serieRoutes', __name__)
