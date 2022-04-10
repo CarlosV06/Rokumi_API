@@ -60,7 +60,7 @@ def uploadSerie():
         serieAuthor = newSerie.author,
         serieCover = newSerie.cover,
         postingDate = newSerie.posting_date,
-        postedBy = newSerie.posted_by,
+        postedBy = str(newSerie.posted_by.id),
         description = newSerie.description
     ), 201
     
