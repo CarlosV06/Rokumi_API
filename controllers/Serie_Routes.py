@@ -78,6 +78,8 @@ def getSeries():
                 'name': serie.name,
                 'cover': serie.cover,
                 'status': serie.status,
+                'posting_date': serie.posting_date,
+                'author': serie.author,
                 'posted_by':{
                     'userId': str(serie.posted_by.id),
                     'first_name': serie.posted_by.first_name,
