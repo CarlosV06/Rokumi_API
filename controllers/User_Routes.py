@@ -1,6 +1,7 @@
 # THIS FILE WILL CONTAIN ALL ROUTES RELATED TO USER #
 
 from flask import request, jsonify, Blueprint
+from models.Tracking_Model import TrackingModel
 from models.User_Model import UserModel
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from cloudinary import api, uploader
@@ -81,14 +82,11 @@ def user_signIn():
 @userRoutes.route('/user', methods = ['GET'])
 @jwt_required()
 def get_userProfile():
-     
-        
     # GETTING BASIC USER'S INFORMATION #
     user_session = UserModel.objects(id = get_jwt_identity()).first()
       
-      
-      
     user = {
+        'idUser': str(user_session.id),
         'firstName': user_session.first_name,
         'lastName': user_session.last_name,
         'email': user_session.email,
@@ -97,12 +95,36 @@ def get_userProfile():
     }
       
     # TRACKING LIST OF THE USER #
-    
+    tracking_list = []
+    ownerUser = False
+    for tracking in TrackingModel.objects(user = get_jwt_identity()).all():
+        
+        uploaded_by = str(tracking.serie.posted_by.id)
+        
+        if uploaded_by == get_jwt_identity():
+            ownerUser = True
+        
+        tracking_list.append({
+            'idSerie' : str(tracking.serie.id),
+            'name': tracking.serie.name,
+            'cover':tracking.serie.cover,
+            'author': tracking.serie.author,
+            'posting_date': tracking.serie.posting_date,
+            'status': tracking.serie.status,
+            'posted_by': {
+                'idUser': str(tracking.serie.posted_by.id),
+                'first_name': tracking.serie.posted_by.first_name,
+                'last_name': tracking.serie.posted_by.last_name,
+                'email' : tracking.serie.posted_by.email
+            },
+            'owning': ownerUser
+        })
     
     return jsonify(
         message = "User's information received successfully.",
         status = "200",
-        userInformation = user 
+        userInformation = user,
+        tracking = tracking_list
     ), 200    
     
 
