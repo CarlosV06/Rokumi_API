@@ -3,6 +3,7 @@
 from app import DB
 import datetime
 import mongoengine
+from models.Serie_Model import SerieModel
 
 # CHAPTER #
 class ChapterModel(DB.Document):
