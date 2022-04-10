@@ -1,6 +1,7 @@
 # THIS FILE WILL DEFINE THE ROUTES RELATED TO SERIES #
 
 from flask import request, jsonify, Blueprint
+from models.Chapter_Model import ChapterModel
 from models.Tracking_Model import TrackingModel
 from models.User_Model import UserModel
 from models.Serie_Model import SerieModel
@@ -98,4 +99,40 @@ def getSeries():
     except: return jsonify(message = "An error has occurred while getting the information.", status = "400"), 400
         
     
+# GET THE PROFILE OF A SERIE #
+@serieRoutes.route('/serie/<string:idSerie>', methods = ['GET'])
+def getSerie_profile(idSerie):
+    
+    # LOCATION OF DATA RELATED TO THE SELECTED SERIE #
+    serie = SerieModel.objects(id = idSerie).first()
+    
+    if not serie: return jsonify(message = "serie not found", status = "400"), 400
+
+    chapters = []
+    for chapter in ChapterModel.objects(serie = serie.id).all():
+        
+        chapters.append({
+            'idChapter': str(chapter.id),
+            'chapterName': chapter.name,
+            'chapter_number':chapter.chapter_number,
+            'released': chapter.released
+        })
+
+    serieInfo = {
+        'idSerie': str(serie.id),
+        'name': serie.name,
+        'description': serie.description,
+        'cover': serie.cover,
+        'author': serie.author,
+        'status': serie.status,
+        'posting_date': serie.posting_date,
+        'posted_by': {
+                    'userId': str(serie.posted_by.id),
+                    'first_name': serie.posted_by.first_name,
+                    'last_name': serie.posted_by.last_name,
+        },
+        'chapters': chapters
+    }
+    
+    return jsonify(message = "information received successfully.", status = "200", data = serieInfo), 200
     
