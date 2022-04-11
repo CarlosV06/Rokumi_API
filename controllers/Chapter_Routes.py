@@ -1,9 +1,12 @@
 # THIS FILE WILL DEFINE ALL THE ROUTES RELATED TO A CHAPTER #
 
 import datetime
+from email import message
 import time
+from xml.etree.ElementTree import Comment
 from flask import request, jsonify, Blueprint
 from models.Chapter_Model import ChapterModel
+from models.Comment_Model import CommentModel
 from models.User_Model import UserModel
 from models.Serie_Model import SerieModel
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -12,7 +15,6 @@ from cloudinary import api, uploader
 chapterRoutes = Blueprint('chapterRoutes', __name__)
 
 # UPLOAD A CHAPTER #
-
 @chapterRoutes.route('/chapter/<string:serie_id>', methods = ['POST'])
 @jwt_required()
 def uploadChapter(serie_id):
@@ -60,3 +62,39 @@ def uploadChapter(serie_id):
         user = get_jwt_identity()
     ), 201
 
+
+# READ A CHAPTER #
+@chapterRoutes.route('/chapter/<string:idChapter>', methods = ['GET'])
+def readChapter(idChapter):
+    
+    # LOCATION OF THE INFORMATION AND PAGES OF THE CHAPTER #
+    chapter_obj = ChapterModel.objects(id = idChapter).first()
+    if not chapter_obj: return jsonify(message = "Chapter not found.", status = "400"), 400
+    
+    else:
+        
+        if 'pages' in chapter_obj:
+            pages = []
+            
+            for page in chapter_obj.pages:
+                pages.append(page)
+        
+        chapter = {
+            'idChapter': str(chapter_obj.id),
+            'name': chapter_obj.name,
+            'chapter_number': chapter_obj.chapter_number,
+            'serie': {
+                'serieName': chapter_obj.serie.name,
+                'idSerie': str(chapter_obj.serie.id)
+            },
+            'released': chapter_obj.released,
+            'pages': pages
+        }
+        
+                
+        return jsonify(
+            message = "Information received successfully.",
+            status = "200",
+            chapterInfo = chapter
+        ), 200
+    
