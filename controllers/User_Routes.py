@@ -94,6 +94,18 @@ def get_userProfile():
         'role': user_session.role
     }
       
+    
+    return jsonify(
+        message = "User's information received successfully.",
+        status = "200",
+        userInformation = user
+    ), 200    
+  
+    
+# USER'S TRACKING LIST #
+@userRoutes.route('/user/trackingList', methods = ['GET'])
+@jwt_required()
+def get_trackingList():
     # TRACKING LIST OF THE USER #
     tracking_list = []
     ownerUser = False
@@ -121,12 +133,11 @@ def get_userProfile():
         })
     
     return jsonify(
-        message = "User's information received successfully.",
+        message = "Information received successfully",
         status = "200",
-        userInformation = user,
-        tracking = tracking_list
-    ), 200    
-    
+        tracking_list = tracking_list
+    ), 200
+
 
 # EDITION OF BASIC INFORMATION OF THE USER #
 @userRoutes.route('/user', methods = ['PUT'])
