@@ -84,8 +84,8 @@ def uploadComment(chapter_id):
 # FUNCTION TO GET THE CHILDREN OF A COMMENT #
 def getComment_children(parent):
     
-    commentChildren = CommentModel.objects(parent = parent).all().order_by('date')
-    commentParent = CommentModel.objects(id = parent).first()
+    commentChildren = CommentModel.objects(parent = parent).order_by('posting_date')
+    Parent = CommentModel.objects(id = parent).first()
     
     childs = []
     
@@ -93,15 +93,47 @@ def getComment_children(parent):
         commentParent = comment.id
         
         childs.append({
-            'id': comment.id,
+            'id': str(comment.id),
             'postingDate': comment.posting_date,
             'text': comment.text,
-            'parentId': str(comment.parent.id),
+            'parentId': str(Parent.id),
             'user': str(comment.owner.id),
             'chapter': comment.chapter,
-            'parentOwner': str(parent.owner.id),
-            'parentText': parent.text,
+            'parentText': Parent.text,
             'children': getComment_children(commentParent)
             })    
     
     return childs
+
+
+# GET ALL COMMENTS OF A SPECIFIC CHAPTER #
+@commentRoutes.route('/comment/<string:idChapter>', methods = ['GET'])
+#@jwt_required()
+def getComments(idChapter):
+    comments_objects = CommentModel.objects(chapter = idChapter).all()
+    
+    if comments_objects:
+        chapterComments = []
+        for comment in comments_objects:
+        
+            chapterComments.append({
+            'idComment': str(comment.id),
+            'text': comment.text,
+            'owner': {
+                'idUser':str(comment.owner.id),
+                'first_name': comment.owner.first_name,
+                'last_number': comment.owner.last_name
+                },
+            'posting_date': comment.posting_date,
+            'parent': comment.parent,
+            'children': getComment_children(comment.id)
+        })
+        
+    
+        return jsonify(
+            message = "Comments received successfully.",
+            status = "200",
+            comments = chapterComments
+        ), 200
+        
+    else: return jsonify(message = "This serie has no comments.", status = "200")
