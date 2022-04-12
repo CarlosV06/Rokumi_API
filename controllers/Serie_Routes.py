@@ -75,7 +75,7 @@ def getSeries():
         for serie in SerieModel.objects().all():
             
             series.append({
-                'id': str(serie.id),
+                'idSerie': str(serie.id),
                 'name': serie.name,
                 'cover': serie.cover,
                 'status': serie.status,
