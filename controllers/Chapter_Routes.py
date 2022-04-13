@@ -23,7 +23,7 @@ def uploadChapter(serie_id):
     data = request.form
     
     if not data:
-        return jsonify(message = "Data was not given.", status = "400"), 400
+        return jsonify(message = "Data was not given.", status = 400), 400
     
     # LOCATION OF THE SERIE #
     serie = SerieModel.objects(id = serie_id).first()
@@ -33,7 +33,7 @@ def uploadChapter(serie_id):
     
     coincidence = ChapterModel.objects(name = name).first()
     if coincidence and coincidence.chapter_number is chapter_number:
-        return jsonify(message = "Chapter already exists", status = "400"), 400
+        return jsonify(message = "Chapter already exists", status = 400), 400
     
     newChapter = ChapterModel(name = name, chapter_number = chapter_number, serie = str(serie.id))
     newChapter.save()
@@ -54,7 +54,7 @@ def uploadChapter(serie_id):
         
     return jsonify(
         message = "The chapter has been added successfully!",
-        status = "201",
+        status = 201,
         idChapter = str(newChapter.id),
         chapterName = newChapter.name,
         number = newChapter.chapter_number,
@@ -69,7 +69,7 @@ def readChapter(idChapter):
     
     # LOCATION OF THE INFORMATION AND PAGES OF THE CHAPTER #
     chapter_obj = ChapterModel.objects(id = idChapter).first()
-    if not chapter_obj: return jsonify(message = "Chapter not found.", status = "400"), 400
+    if not chapter_obj: return jsonify(message = "Chapter not found.", status = 400), 400
     
     else:
         
@@ -94,7 +94,7 @@ def readChapter(idChapter):
                 
         return jsonify(
             message = "Information received successfully.",
-            status = "200",
+            status = 200,
             chapterInfo = chapter
         ), 200
     

@@ -19,7 +19,7 @@ def uploadComment(chapter_id):
     data = request.json
     
     # VALIDATION TO CHECK IF THE USER FILLED ALL THE REQUIRED INFORMATION #
-    if not data:    return jsonify(message = "The information was not given. Please fill all the spaces up.", status = "400"), 400
+    if not data:    return jsonify(message = "The information was not given. Please fill all the spaces up.", status = 400), 400
     
     # RECEPTION OF DATA #
     text = data['commentText']
@@ -48,7 +48,7 @@ def uploadComment(chapter_id):
             
         return jsonify(
             message = "Comment created successfully.",
-            status = "201",
+            status = 201,
             commentId = str(newComment.id),
             text = newComment.text,
             user = poster_user,
@@ -72,7 +72,7 @@ def uploadComment(chapter_id):
         
         return jsonify(
             message = "Comment created successfully.",
-            status = "201",
+            status = 201,
             commentId = str(newComment.id),
             text = newComment.text,
             user = poster_user,
@@ -132,8 +132,8 @@ def getComments(idChapter):
     
         return jsonify(
             message = "Comments received successfully.",
-            status = "200",
+            status = 200,
             comments = chapterComments
         ), 200
         
-    else: return jsonify(message = "This serie has no comments.", status = "200")
+    else: return jsonify(message = "This serie has no comments.", status = 400)

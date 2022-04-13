@@ -23,7 +23,7 @@ def user_signUp():
     existingUser = UserModel.objects(email = email).first()
     if existingUser:
         
-        return jsonify(message = "The user already exists. Use another email or sign in.", status = "409"), 409
+        return jsonify(message = "The user already exists. Use another email or sign in.", status = 409), 409
     
     else:
     # CREATING A NEW USER #
@@ -34,7 +34,7 @@ def user_signUp():
     
         return jsonify(
             message = "User created successfully.",
-            status = "201",
+            status = 201,
             idUser = str(newUser.id),
             access_token = access_token,
             firstName = newUser.first_name,
@@ -64,7 +64,7 @@ def user_signIn():
         return jsonify(
             message = "Process completed successfully.",
             access_token = access_token,
-            status = "200",
+            status = 200,
             email = user.email,
             photo = user.photo,
             role = user.role,
@@ -75,7 +75,7 @@ def user_signIn():
         
     else:
         # USER DOES NOT EXIST OR WRONG INFO GIVEN #
-        return jsonify(message = "Wrong credentials or the user does not exist.", status = "409"), 409
+        return jsonify(message = "Wrong credentials or the user does not exist.", status = 409), 409
     
 
 # USER'S PROFILE #
@@ -97,7 +97,7 @@ def get_userProfile():
     
     return jsonify(
         message = "User's information received successfully.",
-        status = "200",
+        status = 200,
         userInformation = user
     ), 200    
   
@@ -134,7 +134,7 @@ def get_trackingList():
     
     return jsonify(
         message = "Information received successfully",
-        status = "200",
+        status = 200,
         tracking_list = tracking_list
     ), 200
 
@@ -159,7 +159,7 @@ def editUser_information():
         
         return jsonify(
             message = "Changes saved successfully.",
-            status = "201",
+            status = 201,
             firstName = user_session.first_name,
             lastName = user_session.last_name,
             email = user_session.email,
@@ -168,7 +168,7 @@ def editUser_information():
         
     else:
         
-        return jsonify(message = "User not found.", status = "409"), 409
+        return jsonify(message = "User not found.", status = 409), 409
      
 
 # EDITION OF USER'S PASSWORD #
@@ -191,14 +191,14 @@ def editUser_password():
         
         return jsonify(
             message = "Password changed successfully.",
-            status = "201"
+            status = 201
         ), 201
     
     else:
         
         return jsonify(
             message = "Missing fields or wrong credentials.",
-            status = "400"
+            status = 400
         ), 400
 
 
@@ -216,11 +216,11 @@ def setPicture():
         upload = uploader.upload(user_photo, folder = f'Rokumi/{user.id}', public_id = 'profilePicture')
         user.update(photo = upload['url'])
     
-        return jsonify(message = "Changes saved successfully.", status = "200"), 200
+        return jsonify(message = "Changes saved successfully.", status = 200), 200
     
     else:
          
-        return jsonify(message = "A valid file was not selected.", status = "400"), 400
+        return jsonify(message = "A valid file was not selected.", status = 400), 400
 
 
 # DELETION OF AN EXISTING USER #
@@ -234,15 +234,15 @@ def deleteUser():
     if user:
         user.delete()
         
-        return jsonify(message = "User deleted successfully.", status = "200"), 200
+        return jsonify(message = "User deleted successfully.", status = 200), 200
     
     else: 
         
-        return jsonify(message = "User does not exist.", status = "409"), 409
+        return jsonify(message = "User does not exist.", status = 409), 409
 
 # LOGOUT #
 @userRoutes.route('/user/logout', methods = ['POST'])
 @jwt_required()
 def logout():
     
-    return jsonify(message = "Session terminated successfully.", status = "200", user = get_jwt_identity(), loggedOut = "True"), 200
+    return jsonify(message = "Session terminated successfully.", status = 200, user = get_jwt_identity(), loggedOut = "True"), 200
