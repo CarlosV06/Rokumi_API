@@ -25,13 +25,13 @@ def uploadSerie():
         
         return jsonify(
             message = "Fill up the information requirements. One or more spaces were not completed.", 
-            status = "400"), 400
+            status = 400), 400
     
     # VALIDATION TO CHECK IF THE SERIE ALREADY EXISTS #
     coincidence = SerieModel.objects(name = data['serieName']).first()
     if coincidence:
         
-        return jsonify(message = "Serie already exists.", status = "400", serie = coincidence.name), 400
+        return jsonify(message = "Serie already exists.", status = 400, serie = coincidence.name), 400
     
     
     name = data['serieName']
@@ -82,7 +82,7 @@ def getSeries():
                 'posting_date': serie.posting_date,
                 'author': serie.author,
                 'posted_by':{
-                    'userId': str(serie.posted_by.id),
+                    'idUser': str(serie.posted_by.id),
                     'first_name': serie.posted_by.first_name,
                     'last_name': serie.posted_by.last_name,
                 }
@@ -96,7 +96,7 @@ def getSeries():
             ), 200
         
         
-    except: return jsonify(message = "An error has occurred while getting the information.", status = "400"), 400
+    except: return jsonify(message = "An error has occurred while getting the information.", status = 400), 400
         
     
 # GET THE PROFILE OF A SERIE #
@@ -106,7 +106,7 @@ def getSerie_profile(idSerie):
     # LOCATION OF DATA RELATED TO THE SELECTED SERIE #
     serie = SerieModel.objects(id = idSerie).first()
     
-    if not serie: return jsonify(message = "serie not found", status = "400"), 400
+    if not serie: return jsonify(message = "serie not found", status = 400), 400
 
     chapters = []
     for chapter in ChapterModel.objects(serie = serie.id).all():
@@ -127,12 +127,70 @@ def getSerie_profile(idSerie):
         'status': serie.status,
         'posting_date': serie.posting_date,
         'posted_by': {
-                    'userId': str(serie.posted_by.id),
+                    'idUser': str(serie.posted_by.id),
                     'first_name': serie.posted_by.first_name,
                     'last_name': serie.posted_by.last_name,
         },
         'chapters': chapters
     }
     
-    return jsonify(message = "information received successfully.", status = "200", data = serieInfo), 200
+    return jsonify(message = "information received successfully.", status = 200, data = serieInfo), 200
     
+
+# EDITION OF A SERIE #
+@serieRoutes.route('/serie/<string:idSerie>', methods = ['PUT'])
+@jwt_required()
+def editSerie(idSerie):
+    data = request.form
+    user = UserModel.objects(id = get_jwt_identity()).first()
+    serie_obj = SerieModel.objects(id = idSerie).first()
+    
+    # VALIDATION TO CHECK IF THE INFORMATION WAS GIVEN #
+    if not data: return jsonify(message = "No data provided or a parameter is missing.", status = 400), 400
+    
+    else: 
+        name = data['serieName']
+        author = data['serieAuthor']
+        status = data['serieStatus']
+        isOwner = data['owning']
+        #cover = data['serieCover']
+        
+        # VALIDATION TO CHECK IF THE SERIE WAS UPLOADED BY THE LOGGED USER OR IF THE USER IS AN ADMIN #
+        if isOwner:
+            
+            serie_obj.update(name = name, author = author, status = status)
+            serie_obj.reload()
+            
+           # if cover:
+            #    serieCover = uploader.upload(cover, folder = f'Rokumi/{serie_obj.id}', public_id = 'serieCover')
+             #   serie_obj.update(cover = serieCover['url'])
+              #  serie_obj.reload()
+            
+
+            return jsonify(
+                message = "Changes saved successfully.",
+                status = 201,
+            ), 201
+            
+            
+        if user.role == 'administrator':
+             
+            serie_obj.update(name = name, author = author, status = status)
+            serie_obj.reload()
+            
+           # if cover:
+            #    serieCover = uploader.upload(cover, folder = f'Rokumi/{serie_obj.id}', public_id = 'serieCover')
+             #   serie_obj.update(cover = serieCover['url'])
+              #  serie_obj.reload()
+            
+
+            return jsonify(
+                message = "Changes saved successfully.",
+                status = 201,
+            ), 201
+            
+            
+             
+
+        return jsonify(message = "You are not allowed to edit this serie. You are neither an administrator nor owner of the serie.",
+                       status = 400), 400
