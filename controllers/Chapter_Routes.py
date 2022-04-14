@@ -15,9 +15,9 @@ from cloudinary import api, uploader
 chapterRoutes = Blueprint('chapterRoutes', __name__)
 
 # UPLOAD A CHAPTER #
-@chapterRoutes.route('/chapter/<string:serie_id>', methods = ['POST'])
+@chapterRoutes.route('/chapter/<string:idSerie>', methods = ['POST'])
 @jwt_required()
-def uploadChapter(serie_id):
+def uploadChapter(idSerie):
 
     # RECEPTION OF USER'S DATA #
     data = request.form
@@ -26,13 +26,13 @@ def uploadChapter(serie_id):
         return jsonify(message = "Data was not given.", status = 400), 400
     
     # LOCATION OF THE SERIE #
-    serie = SerieModel.objects(id = serie_id).first()
+    serie = SerieModel.objects(id = idSerie).first()
     
     name = data['chapterName']
     chapter_number = data['chapterNumber']
     
     coincidence = ChapterModel.objects(name = name).first()
-    if coincidence and coincidence.chapter_number is chapter_number:
+    if coincidence and coincidence.chapter_number is chapter_number and coincidence.serie is idSerie:
         return jsonify(message = "Chapter already exists", status = 400), 400
     
     newChapter = ChapterModel(name = name, chapter_number = chapter_number, serie = str(serie.id))
