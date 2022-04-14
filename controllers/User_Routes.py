@@ -102,7 +102,7 @@ def get_userProfile():
     ), 200    
   
     
-# USER'S TRACKING LIST #
+# USER'S TRACKING LIST FOR THE USER'S OWNED SERIES#
 @userRoutes.route('/user/trackingList', methods = ['GET'])
 @jwt_required()
 def get_trackingList():
@@ -137,6 +137,9 @@ def get_trackingList():
         status = 200,
         tracking_list = tracking_list
     ), 200
+
+# TRACKING LIST FOR ALL THE SERIES WHICH ARE NOT PROPERTY OF THE LOGGED USER #
+
 
 
 # EDITION OF BASIC INFORMATION OF THE USER #
