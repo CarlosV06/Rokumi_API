@@ -169,8 +169,8 @@ def editSerie(idSerie):
 
             return jsonify(
                 message = "Changes saved successfully.",
-                status = 201,
-            ), 201
+                status = 200,
+            ), 200
             
             
         if user.role == 'administrator':
