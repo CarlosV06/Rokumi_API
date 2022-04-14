@@ -31,8 +31,8 @@ def uploadChapter(idSerie):
     name = data['chapterName']
     chapter_number = data['chapterNumber']
     
-    coincidence = ChapterModel.objects(name = name).first()
-    if coincidence and coincidence.chapter_number is chapter_number and coincidence.serie is idSerie:
+    coincidence = ChapterModel.objects(serie = idSerie).first()
+    if coincidence and coincidence.name == name:
         return jsonify(message = "Chapter already exists", status = 400), 400
     
     newChapter = ChapterModel(name = name, chapter_number = chapter_number, serie = str(serie.id))
