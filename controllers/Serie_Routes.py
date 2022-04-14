@@ -153,7 +153,7 @@ def editSerie(idSerie):
         author = data['serieAuthor']
         status = data['serieStatus']
         isOwner = data['owning']
-        #cover = data['serieCover']
+        cover = data['serieCover']
         
         # VALIDATION TO CHECK IF THE SERIE WAS UPLOADED BY THE LOGGED USER OR IF THE USER IS AN ADMIN #
         if isOwner:
@@ -161,10 +161,10 @@ def editSerie(idSerie):
             serie_obj.update(name = name, author = author, status = status)
             serie_obj.reload()
             
-           # if cover:
-            #    serieCover = uploader.upload(cover, folder = f'Rokumi/{serie_obj.id}', public_id = 'serieCover')
-             #   serie_obj.update(cover = serieCover['url'])
-              #  serie_obj.reload()
+            if cover:
+               serieCover = uploader.upload(cover, folder = f'Rokumi/{serie_obj.id}', public_id = 'serieCover')
+               serie_obj.update(cover = serieCover['url'])
+               serie_obj.reload()
             
 
             return jsonify(
@@ -178,16 +178,16 @@ def editSerie(idSerie):
             serie_obj.update(name = name, author = author, status = status)
             serie_obj.reload()
             
-           # if cover:
-            #    serieCover = uploader.upload(cover, folder = f'Rokumi/{serie_obj.id}', public_id = 'serieCover')
-             #   serie_obj.update(cover = serieCover['url'])
-              #  serie_obj.reload()
+            if cover:
+               serieCover = uploader.upload(cover, folder = f'Rokumi/{serie_obj.id}', public_id = 'serieCover')
+               serie_obj.update(cover = serieCover['url'])
+               serie_obj.reload()
             
 
             return jsonify(
                 message = "Changes saved successfully.",
-                status = 201,
-            ), 201
+                status = 200,
+                ), 200
             
             
              
