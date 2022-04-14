@@ -102,7 +102,7 @@ def get_userProfile():
     ), 200    
   
     
-# USER'S TRACKING LIST FOR THE USER'S OWNED SERIES#
+# USER'S TRACKING LIST #
 @userRoutes.route('/user/trackingList', methods = ['GET'])
 @jwt_required()
 def get_trackingList():
@@ -138,8 +138,12 @@ def get_trackingList():
         tracking_list = tracking_list
     ), 200
 
-# TRACKING LIST FOR ALL THE SERIES WHICH ARE NOT PROPERTY OF THE LOGGED USER #
-
+# LIST OF SERIES THAT BELONG TO THE LOGGED USER ONLY #
+@userRoutes.route('/user/mySeries', methods = ['GET'])
+@jwt_required()
+def userOwning_series():
+    
+    return ""
 
 
 # EDITION OF BASIC INFORMATION OF THE USER #
