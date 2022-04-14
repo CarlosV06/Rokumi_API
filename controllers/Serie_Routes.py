@@ -85,7 +85,7 @@ def getSeries():
                     'idUser': str(serie.posted_by.id),
                     'first_name': serie.posted_by.first_name,
                     'last_name': serie.posted_by.last_name,
-                }
+                },
             })
             
             
@@ -152,13 +152,13 @@ def editSerie(idSerie):
         name = data['serieName']
         author = data['serieAuthor']
         status = data['serieStatus']
-        isOwner = data['owning']
-        cover = data['serieCover']
+        cover = request.files['cover']
+        description = data['serieDescription']
         
         # VALIDATION TO CHECK IF THE SERIE WAS UPLOADED BY THE LOGGED USER OR IF THE USER IS AN ADMIN #
-        if isOwner:
+        if str(serie_obj.posted_by.id) == str(user.id):
             
-            serie_obj.update(name = name, author = author, status = status)
+            serie_obj.update(name = name, author = author, status = status, description = description)
             serie_obj.reload()
             
             if cover:
@@ -175,7 +175,7 @@ def editSerie(idSerie):
             
         if user.role == 'administrator':
              
-            serie_obj.update(name = name, author = author, status = status)
+            serie_obj.update(name = name, author = author, status = status, description = description)
             serie_obj.reload()
             
             if cover:
@@ -188,9 +188,7 @@ def editSerie(idSerie):
                 message = "Changes saved successfully.",
                 status = 200,
                 ), 200
-            
-            
-             
-
+    
+     
         return jsonify(message = "You are not allowed to edit this serie. You are neither an administrator nor owner of the serie.",
                        status = 400), 400
