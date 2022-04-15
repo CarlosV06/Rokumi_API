@@ -85,7 +85,7 @@ def getSeries():
                     'idUser': str(serie.posted_by.id),
                     'first_name': serie.posted_by.first_name,
                     'last_name': serie.posted_by.last_name,
-                },
+                }
             })
             
             
@@ -96,7 +96,10 @@ def getSeries():
             ), 200
         
         
-    except: return jsonify(message = "An error has occurred while getting the information.", status = 400), 400
+    except Exception as e: 
+        print(e)
+         
+        return jsonify(message = "An error has occurred while getting the information.", status = 400), 400
 
 # SERIES THAT BELONG TO THE LOGGED USER ONLY #
 @serieRoutes.route('/serie/mySeries', methods = ['GET'])
