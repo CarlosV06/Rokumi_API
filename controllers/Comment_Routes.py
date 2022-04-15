@@ -111,9 +111,10 @@ def getComment_children(parent):
 #@jwt_required()
 def getComments(idChapter):
     comments_objects = CommentModel.objects(chapter = idChapter).all()
+    chapterComments = []
+    
     
     if comments_objects:
-        chapterComments = []
         for comment in comments_objects:
         
             chapterComments.append({
@@ -136,4 +137,4 @@ def getComments(idChapter):
             comments = chapterComments
         ), 200
         
-    else: return jsonify(message = "This serie has no comments.", status = 409)
+    else: return jsonify(message = "This serie has no comments.", comments = chapterComments, status = 200), 200
