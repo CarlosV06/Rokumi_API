@@ -1,5 +1,6 @@
 # THIS FILE WILL DEFINE THE ROUTES RELATED TO SERIES #
 
+from email import message
 from flask import request, jsonify, Blueprint
 from models.Chapter_Model import ChapterModel
 from models.Tracking_Model import TrackingModel
@@ -232,5 +233,20 @@ def editSerie(idSerie):
      
         return jsonify(message = "You are not allowed to edit this serie. You are neither an administrator nor owner of the serie.",
                        status = 400), 400
+        
+# FOLLOW/TRACK A SERIE #
+@serieRoutes.route('/serie/follow/<string:idSerie>', methods = ['POST'])
+@jwt_required()
+def followSerie(idSerie):
+    
+    serie = SerieModel.objects(id = idSerie).first()
+    if not serie: return jsonify(message = "Serie not found.", status = 409), 409
+    
+    else:
+        
+        Tracking = TrackingModel(user = get_jwt_identity(), serie = str(serie.id))
+        Tracking.save()
+    
+        return jsonify(message = "You are now following this serie!", status = 201)
         
 
