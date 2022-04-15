@@ -73,11 +73,6 @@ def getSeries():
         series = []
         for serie in SerieModel.objects().all():
             
-            #following = False
-            #tracking = TrackingModel.objects(serie = serie.id, user = get_jwt_identity()).first()
-            #if tracking is not None:
-            #    following = True
-            
             series.append({
                 'idSerie': str(serie.id),
                 'name': serie.name,
@@ -126,7 +121,7 @@ def userOwning_series():
                     'idUser': str(serie.posted_by.id),
                     'first_name': serie.posted_by.first_name,
                     'last_name': serie.posted_by.last_name,
-        },
+        }, 
             'following': following
         })
     
@@ -138,6 +133,7 @@ def userOwning_series():
 
 # GET THE PROFILE OF A SERIE #
 @serieRoutes.route('/serie/<string:idSerie>', methods = ['GET'])
+@jwt_required(optional = True)
 def getSerie_profile(idSerie):
     
     # LOCATION OF DATA RELATED TO THE SELECTED SERIE #
@@ -156,9 +152,10 @@ def getSerie_profile(idSerie):
         })
 
     following = False
-    tracking = TrackingModel.objects(serie = serie.id, user = get_jwt_identity()).first()
-    if tracking is not None:
-        following = True
+    if get_jwt_identity():
+        tracking = TrackingModel.objects(serie = serie.id, user = get_jwt_identity()).first()
+        if tracking is not None:
+            following = True
     
     serieInfo = {
         'idSerie': str(serie.id),
