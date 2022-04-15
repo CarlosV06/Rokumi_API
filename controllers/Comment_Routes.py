@@ -33,14 +33,14 @@ def uploadComment(idChapter):
         parentObject = CommentModel.objects(id = parent).first()
             
         poster_user = {
-            'id': str(newComment.owner.id),
+            'idUser': str(newComment.owner.id),
             'first_name': newComment.owner.first_name,
             'last_name': newComment.owner.last_name,
             'role': newComment.owner.role
         }
         
         parent_user = {
-            'id': str(parentObject.owner.id),
+            'idUser': str(parentObject.owner.id),
             'first_name': parentObject.owner.first_name,
             'last_name': parentObject.owner.last_name,
             'role': parentObject.owner.role
@@ -49,7 +49,7 @@ def uploadComment(idChapter):
         return jsonify(
             message = "Comment created successfully.",
             status = 201,
-            commentId = str(newComment.id),
+            idComment = str(newComment.id),
             text = newComment.text,
             user = poster_user,
             parent = parent_user,
@@ -64,7 +64,7 @@ def uploadComment(idChapter):
         newComment.save()
         
         poster_user = {
-            'id': str(newComment.owner.id),
+            'idUser': str(newComment.owner.id),
             'first_name': newComment.owner.first_name,
             'last_name': newComment.owner.last_name,
             'role': newComment.owner.role
@@ -123,7 +123,7 @@ def getComments(idChapter):
             'owner': {
                 'idUser':str(comment.owner.id),
                 'first_name': comment.owner.first_name,
-                'last_number': comment.owner.last_name
+                'last_name': comment.owner.last_name
                 },
             'posting_date': comment.posting_date,
             'parent': comment.parent,
@@ -140,15 +140,61 @@ def getComments(idChapter):
     else: return jsonify(message = "This chapter has no comments.", comments = chapterComments, status = 200), 200
     
 
+# EDIT A COMMENT #
+@commentRoutes.route('/comment/<string:idComment>', methods = ['PUT'])
+@jwt_required()
+def editComment(idComment):
+    comment = CommentModel.objects(id = idComment).first()
+    user = UserModel.objects(id = get_jwt_identity()).first()
+    data = request.json
+    
+    if not data: return jsonify(message = "No data provided or a parameter is missing.", status = 409), 409
+    
+    else:
+        text = data['commentText']
+        
+        # VALIDATION TO CHECK IF THE USER IS THE OWNER OF THE COMMENT OR IT IS AN ADMIN #
+        if str(comment.owner.id) == str(user.id):
+            comment.update(text = text)
+            comment.reload()
+            
+            return jsonify(message = "Changes saved successfully.", status = 200)
+        
+        if user.role == "administrator":
+            comment.update(text = text)
+            comment.reload()
+            
+            return jsonify(message = "Changes saved successfully.", status = 200)
+        
+        
+        return jsonify(message = "You are not allowed to edit this comment. You are neither an administrator nor the owner of the comment.",
+                       status = 400), 400
+
+
 # DELETE A COMMENT #
 @commentRoutes.route('/comment/<string:idComment>', methods = ['DELETE'])
 @jwt_required()
 def deleteComment(idComment):
     comment = CommentModel.objects(id = idComment).first()
+    user = UserModel.objects(id = get_jwt_identity()).first()
     
     if not comment: return jsonify(message = "comment does not exist.", status = 409), 409
     
     else:
-        comment.delete()
         
-        return jsonify(message = "Comment deleted successfully.", status = 200), 200
+        if str(comment.owner.id) == str(user.id):
+            
+            comment.delete()
+        
+            return jsonify(message = "Comment deleted successfully.", status = 200), 200
+        
+        if user.role == "administrator":
+            
+            comment.delete()
+        
+            return jsonify(message = "Comment deleted successfully.", status = 200), 200
+        
+        
+    return jsonify(message = "You are not allowed to delete this comment. You are neither an administrator nor the owner of the comment.",
+                   status = 400), 400
+            
