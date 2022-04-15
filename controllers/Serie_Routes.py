@@ -264,4 +264,31 @@ def untrackSerie(idSerie):
         Tracking.delete()
     
         return jsonify(message = "Untracking completed successfully.", status = 200), 200
+    
+# DELETE A SERIE #
+@serieRoutes.route('/serie/<string:idSerie>', methods = ['DELETE'])
+@jwt_required()
+def deleteSerie(idSerie):
+    user = UserModel.objects(id = get_jwt_identity()).first()
+    serie = SerieModel.objects(id = idSerie).first()
+    
+    if not serie: return jsonify(message = "Serie does not exist.", status = 409), 409
+    
+    else:
+        
+        # VALIDATION TO CHECK IF THE SERIE WAS UPLOADED BY THE LOGGED USER OR IF THE USER IS AN ADMIN #
+        if str(serie.posted_by.id) == str(user.id):
+            serie.delete()
+            
+            return jsonify(message = "Serie deleted successfully.", status = 200), 200
+        
+        
+        if user.role == "administrator":
+            serie.delete()
+            
+            return jsonify(message = "Serie deleted successfully.", status = 200), 200
+         
+         
+        return jsonify(message = "You are not allowed to delete this serie. You are neither an administrator nor the owner of the serie.",
+                       status = 400), 400
 
