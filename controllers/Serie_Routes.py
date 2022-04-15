@@ -32,7 +32,7 @@ def uploadSerie():
     coincidence = SerieModel.objects(name = data['serieName']).first()
     if coincidence:
         
-        return jsonify(message = "Serie already exists.", status = 400, serie = coincidence.name), 400
+        return jsonify(message = "Serie already exists.", status = 409, serie = coincidence.name), 409
     
     
     name = data['serieName']
@@ -140,7 +140,7 @@ def getSerie_profile(idSerie):
     # LOCATION OF DATA RELATED TO THE SELECTED SERIE #
     serie = SerieModel.objects(id = idSerie).first()
     
-    if not serie: return jsonify(message = "serie not found", status = 400), 400
+    if not serie: return jsonify(message = "serie does not exist.", status = 409), 409
 
     chapters = []
     for chapter in ChapterModel.objects(serie = serie.id).all():
@@ -235,18 +235,33 @@ def editSerie(idSerie):
                        status = 400), 400
         
 # FOLLOW/TRACK A SERIE #
-@serieRoutes.route('/serie/follow/<string:idSerie>', methods = ['POST'])
+@serieRoutes.route('/serie/track/<string:idSerie>', methods = ['POST'])
 @jwt_required()
-def followSerie(idSerie):
+def trackSerie(idSerie):
     
     serie = SerieModel.objects(id = idSerie).first()
-    if not serie: return jsonify(message = "Serie not found.", status = 409), 409
+    if not serie: return jsonify(message = "Serie does not exist.", status = 409), 409
     
     else:
         
         Tracking = TrackingModel(user = get_jwt_identity(), serie = str(serie.id))
         Tracking.save()
     
-        return jsonify(message = "You are now following this serie!", status = 201)
+        return jsonify(message = "You are now following this serie!", status = 201), 201
+
+
+# UNFOLLOW/UNTRACK A SERIE #
+@serieRoutes.route('/serie/untrack/<string:idSerie>', methods = ['DELETE'])
+@jwt_required()
+def untrackSerie(idSerie):
+    
+    serie = SerieModel.objects(id = idSerie).first()
+    if not serie: return jsonify(message = "Serie does not exist.", status = 409), 409
+    
+    else:
         
+        Tracking = TrackingModel.objects(user = get_jwt_identity(), serie = str(serie.id)).first()
+        Tracking.delete()
+    
+        return jsonify(message = "Untracking completed successfully.", status = 200), 200
 
