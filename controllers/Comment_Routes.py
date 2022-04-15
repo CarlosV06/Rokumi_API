@@ -93,10 +93,10 @@ def getComment_children(parent):
         commentParent = comment.id
         
         childs.append({
-            'id': str(comment.id),
+            'idComment': str(comment.id),
             'postingDate': comment.posting_date,
             'text': comment.text,
-            'parentId': str(Parent.id),
+            'parent': str(Parent.id),
             'user': str(comment.owner.id),
             'chapter': str(comment.chapter.id),
             'parentText': Parent.text,
