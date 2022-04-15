@@ -129,7 +129,8 @@ def get_trackingList():
                 'last_name': tracking.serie.posted_by.last_name,
                 'email' : tracking.serie.posted_by.email
             },
-            'owning': ownerUser
+            'owning': ownerUser,
+            'following': "True"
         })
     
     return jsonify(
@@ -137,13 +138,6 @@ def get_trackingList():
         status = 200,
         tracking_list = tracking_list
     ), 200
-
-# LIST OF SERIES THAT BELONG TO THE LOGGED USER ONLY #
-@userRoutes.route('/user/mySeries', methods = ['GET'])
-@jwt_required()
-def userOwning_series():
-    
-    return ""
 
 
 # EDITION OF BASIC INFORMATION OF THE USER #
@@ -248,7 +242,7 @@ def deleteUser():
         return jsonify(message = "User does not exist.", status = 409), 409
 
 # LOGOUT #
-@userRoutes.route('/user/logout', methods = ['POST'])
+@userRoutes.route('/user/logOut', methods = ['DELETE'])
 @jwt_required()
 def logout():
     

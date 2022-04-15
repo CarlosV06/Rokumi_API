@@ -64,7 +64,6 @@ def uploadSerie():
         description = newSerie.description
     ), 201
     
-
 # GET ALL SERIES #
 @serieRoutes.route('/serie', methods = ['GET'])
 def getSeries():
@@ -97,8 +96,36 @@ def getSeries():
         
         
     except: return jsonify(message = "An error has occurred while getting the information.", status = 400), 400
-        
+
+# SERIES THAT BELONG TO THE LOGGED USER ONLY #
+@serieRoutes.route('/serie/mySeries', methods = ['GET'])
+@jwt_required()
+def userOwning_series():
     
+    userSeries = []
+    for serie in SerieModel.objects(posted_by = get_jwt_identity()).all():
+
+        following = False
+        tracking = TrackingModel.objects(serie = serie.id, user = get_jwt_identity()).first()
+        if tracking is not None:
+            following = True
+        
+        userSeries.append({
+            'idSerie' : str(serie.id),
+            'name': serie.name,
+            'cover':serie.cover,
+            'author': serie.author,
+            'posting_date': serie.posting_date,
+            'status': serie.status,
+            'following': following
+        })
+    
+    return jsonify(
+        message = "Information received successfully.",
+        status = 200,
+        series = userSeries
+    ), 200
+
 # GET THE PROFILE OF A SERIE #
 @serieRoutes.route('/serie/<string:idSerie>', methods = ['GET'])
 def getSerie_profile(idSerie):
@@ -118,6 +145,11 @@ def getSerie_profile(idSerie):
             'released': chapter.released
         })
 
+    following = False
+    tracking = TrackingModel.objects(serie = serie.id, user = get_jwt_identity()).first()
+    if tracking is not None:
+        following = True
+    
     serieInfo = {
         'idSerie': str(serie.id),
         'name': serie.name,
@@ -131,7 +163,8 @@ def getSerie_profile(idSerie):
                     'first_name': serie.posted_by.first_name,
                     'last_name': serie.posted_by.last_name,
         },
-        'chapters': chapters
+        'chapters': chapters,
+        'following': following
     }
     
     return jsonify(message = "information received successfully.", status = 200, data = serieInfo), 200
@@ -192,3 +225,5 @@ def editSerie(idSerie):
      
         return jsonify(message = "You are not allowed to edit this serie. You are neither an administrator nor owner of the serie.",
                        status = 400), 400
+        
+
