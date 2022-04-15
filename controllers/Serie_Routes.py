@@ -73,6 +73,11 @@ def getSeries():
         series = []
         for serie in SerieModel.objects().all():
             
+            #following = False
+            #tracking = TrackingModel.objects(serie = serie.id, user = get_jwt_identity()).first()
+            #if tracking is not None:
+            #    following = True
+            
             series.append({
                 'idSerie': str(serie.id),
                 'name': serie.name,
