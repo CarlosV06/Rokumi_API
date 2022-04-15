@@ -54,7 +54,7 @@ def uploadComment(idChapter):
             user = poster_user,
             parent = parent_user,
             date = newComment.posting_date,
-            chapter = newComment.chapter,
+            chapter = str(newComment.chapter.id),
             
             ), 201
     
@@ -77,7 +77,7 @@ def uploadComment(idChapter):
             text = newComment.text,
             user = poster_user,
             date = newComment.posting_date,
-            chapter = newComment.chapter
+            chapter = str(newComment.chapter.id)
             ), 201
         
     
@@ -98,7 +98,7 @@ def getComment_children(parent):
             'text': comment.text,
             'parentId': str(Parent.id),
             'user': str(comment.owner.id),
-            'chapter': comment.chapter,
+            'chapter': str(comment.chapter.id),
             'parentText': Parent.text,
             'children': getComment_children(commentParent)
             })    
@@ -137,4 +137,18 @@ def getComments(idChapter):
             comments = chapterComments
         ), 200
         
-    else: return jsonify(message = "This serie has no comments.", comments = chapterComments, status = 200), 200
+    else: return jsonify(message = "This chapter has no comments.", comments = chapterComments, status = 200), 200
+    
+
+# DELETE A COMMENT #
+@commentRoutes.route('/comment/<string:idComment>', methods = ['DELETE'])
+@jwt_required()
+def deleteComment(idComment):
+    comment = CommentModel.objects(id = idComment).first()
+    
+    if not comment: return jsonify(message = "comment does not exist.", status = 409), 409
+    
+    else:
+        comment.delete()
+        
+        return jsonify(message = "Comment deleted successfully.", status = 200), 200
