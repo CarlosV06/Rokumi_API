@@ -2,6 +2,8 @@
 
 from app import DB
 import mongoengine
+from models.User_Model import UserModel
+from models.Serie_Model import SerieModel
 
 class TrackingModel(DB.Document):
     

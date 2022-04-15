@@ -8,7 +8,8 @@ class SerieModel(DB.Document):
     
     # ATTRIBUTES #
     
-    name = DB.StringField(required = True)
+    name = DB.StringField(required = True, unique = True)
+    description = DB.StringField(default = "")
     cover = DB.StringField(default = "")
     author = DB.StringField(default = "none")
     status = DB.StringField(default = "")
