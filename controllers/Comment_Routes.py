@@ -12,10 +12,10 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 commentRoutes = Blueprint('commentRoutes', __name__)
 
 # CREATE A COMMENT #
-@commentRoutes.route('/comment/<string:chapter_id>', methods = ['POST'])
+@commentRoutes.route('/comment/<string:idChapter>', methods = ['POST'])
 @jwt_required()
-def uploadComment(chapter_id):
-    user_id = get_jwt_identity()
+def uploadComment(idChapter):
+    idUser = get_jwt_identity()
     data = request.json
     
     # VALIDATION TO CHECK IF THE USER FILLED ALL THE REQUIRED INFORMATION #
@@ -28,7 +28,7 @@ def uploadComment(chapter_id):
     # VALIDATION TO CHECK IF THE COMMENTS IS A CHILD OR HAS CHILDREN AND CREATION OF THE COMMENT #
     if parent:
         
-        newComment = CommentModel(text = text, owner = user_id, chapter = chapter_id, parent = parent)
+        newComment = CommentModel(text = text, owner = idUser, chapter = idChapter, parent = parent)
         newComment.save()
         parentObject = CommentModel.objects(id = parent).first()
             
@@ -60,7 +60,7 @@ def uploadComment(chapter_id):
     
     else:
         
-        newComment = CommentModel(text = text, owner = user_id, chapter = chapter_id)
+        newComment = CommentModel(text = text, owner = idUser, chapter = idChapter)
         newComment.save()
         
         poster_user = {
@@ -136,4 +136,4 @@ def getComments(idChapter):
             comments = chapterComments
         ), 200
         
-    else: return jsonify(message = "This serie has no comments.", status = 400)
+    else: return jsonify(message = "This serie has no comments.", status = 409)
