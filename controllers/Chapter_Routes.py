@@ -97,4 +97,29 @@ def readChapter(idChapter):
             status = 200,
             chapterInfo = chapter
         ), 200
+
+
+# DELETE A CHAPTER #
+@chapterRoutes.route('/chapter/<string:idChapter>', methods = ['DELETE'])
+@jwt_required()
+def deleteChapter(idChapter):
+    chapter = ChapterModel.objects(id = idChapter).first()
+    user = UserModel.objects(id = get_jwt_identity()).first()
+    
+    if not chapter: return jsonify(message = "Chapter does not exist.", status = 409), 409
+    
+    else:
+        
+        if str(chapter.serie.posted_by.id) == str(user.id): 
+            chapter.delete()
+            
+            return jsonify(message = "Chapter deleted successfully.", status = 200), 200
+        
+        if user.role == "administrator":
+            chapter.delete()
+            
+            return jsonify(message = "Chapter deleted successfully.", status = 200), 200
+            
+    return jsonify(message = "You are not allowed to delete this serie. You are neither an administrator nor the owner of the serie.",
+                       status = 400), 400
     
