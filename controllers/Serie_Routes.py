@@ -122,6 +122,11 @@ def userOwning_series():
             'author': serie.author,
             'posting_date': serie.posting_date,
             'status': serie.status,
+            'posted_by': {
+                    'idUser': str(serie.posted_by.id),
+                    'first_name': serie.posted_by.first_name,
+                    'last_name': serie.posted_by.last_name,
+        },
             'following': following
         })
     
